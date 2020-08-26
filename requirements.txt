@@ -1,4 +1,4 @@
 Django~=2.2.4
-guicorn
+gunicorn
 django-heroku
 psycopg2-binary
