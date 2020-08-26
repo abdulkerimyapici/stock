@@ -181,14 +181,14 @@ def xml_parse(request):
 
     args = {}
     args['stoklar'] = stoklar = Stoklar.objects.all()
-    root = ET.Element("root")
+    products = ET.Element("products")
     for stok in stoklar:
-        product = ET.SubElement(root, "product")
-        categories = ET.SubElement(product, "categories")
-        features = ET.SubElement(product, "features")
+        product = ET.SubElement(products, "product")
+        # categories = ET.SubElement(product, "categories")
+        # features = ET.SubElement(product, "features")
         variants = ET.SubElement(product, "variants")
         images = ET.SubElement(product, "images")
-        feature = ET.SubElement(features, "feature")
+        # feature = ET.SubElement(features, "feature")
         variant = ET.SubElement(variants, "variant")
         ET.SubElement(product,"id").text = str(stok.urun_barkod_no)
         ET.SubElement(product,"sku").text = str(stok.urun_barkod_no)
@@ -196,25 +196,26 @@ def xml_parse(request):
         ET.SubElement(product,"description").text = ""
         ET.SubElement(product,"brandId").text = str(stok.urun_barkod_no)
         ET.SubElement(product,"brandName").text = "NikkyMcBridget"
-        ET.SubElement(product,"categoryId").text = ""
-        ET.SubElement(product,"categoryName").text = ""
+        # ET.SubElement(product,"categoryId").text = ""
+        # ET.SubElement(product,"categoryName").text = ""
         ET.SubElement(product,"stock").text = str(stok.urun_stok)
-        ET.SubElement(product,"price").text = str(stok.urun_fiyat) + "TL"
-        ET.SubElement(product,"priceNot").text = str(stok.urun_fiyat) + "TL"
+        ET.SubElement(product,"price").text = str(stok.urun_fiyat)
+        ET.SubElement(product,"priceNot").text = str(stok.urun_fiyat)
         ET.SubElement(product,"cost").text = ""
         ET.SubElement(product,"tax").text = ""
-        ET.SubElement(categories,"category").text = ""
-        ET.SubElement(categories,"category").text = ""
-        ET.SubElement(feature,"name").text = ""
-        ET.SubElement(feature,"value").text = ""
+        # ET.SubElement(categories,"category").text = ""
+        # # ET.SubElement(categories,"category").text = ""
+        # ET.SubElement(feature,"name").text = ""
+        # ET.SubElement(feature,"value").text = ""
         ET.SubElement(variant,"id").text = str(stok.urun_barkod_no)
         ET.SubElement(variant,"sku").text = str(stok.urun_barkod_no)
         ET.SubElement(variant,"stock").text = str(stok.urun_stok)
         ET.SubElement(variant,"label").text = str(stok.urun_urun_beden_adi)
         ET.SubElement(variant,"barcode").text = str(stok.urun_barkod_no)
-        ET.SubElement(images,"image").text = str(stok.urun_gorseli)
+        # ET.SubElement(images,"image").text = str(stok.urun_gorseli)
+        ET.SubElement(images,"image").text = " "
 
-    tree = ET.ElementTree(root)
+    tree = ET.ElementTree(products)
     tree.write("media/stok_xml.xml")
     response = HttpResponse(open("media/stok_xml.xml", 'rb').read())
     response['Content-Type'] = 'text/plain'
