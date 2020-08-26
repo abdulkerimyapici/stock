@@ -1,0 +1,597 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+  <meta charset="utf-8"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+  <meta name="description" content=""/>
+  <meta name="author" content=""/>
+  <title>Nikky Mc Bridget</title>
+  <!-- loader-->
+   <link href="{% static "assets/css/pace.min.css" %}" rel="stylesheet">
+   <link href="{% static "assets/js/pace.min.js" %}" rel="stylesheet">
+   <link href="{% static "assets/plugins/simplebar/css/simplebar.css" %}" rel="stylesheet">
+   <link href="{% static "assets/css/bootstrap.min.css" %}" rel="stylesheet">
+   <link href="{% static "assets/css/animate.css" %}" rel="stylesheet">
+   <link href="{% static "assets/css/icons.css" %}" rel="stylesheet">
+   <link href="{% static "assets/css/sidebar-menu.css" %}" rel="stylesheet">
+   <link href="{% static "assets/css/app-style.css" %}" rel="stylesheet">
+   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <script>
+        $(document).ready(function(){
+          $("#searchInput").on("keyup", function() {
+          var value = $(this).val();
+          var csrftoken = $("[name=csrfmiddlewaretoken]").val();
+          $("#list").hide();
+          $("#appendedlist").show();
+          if (value=="")
+            {
+              $("#appendedlist").hide();
+              $("#list").show();
+            }
+            $.ajax
+            ({
+                url: 'search',
+                data: {
+                    'csrfmiddlewaretoken': csrftoken,
+                    'key': 'search',
+                    'search': value,
+                },
+                type: 'post',
+                success: function (data) {
+                        var html = ''
+                        for (let i = 0; i < data.stoklar.length; i++) {
+                             if (data.stoklar[i].urun_stok < 2){
+                                str =  '<div class="card" style="background-color: indianred">'
+                            } else if (2 <= data.stoklar[i].urun_stok < 5) {
+                                str =  '<div class="card" style="background-color: burlywood">'
+                            } else  {
+                                str =  '<div class="card" style="background-color: aliceblue">'
+                            }
+                            html += ' <div  class="col-12 col-lg-3 col-xl-3">' + str +
+                                '<div class="card-header">' + data.stoklar[i].urun_adi +" " +
+                                "/ "+ data.stoklar[i].urun_urun_rengi +" / "+ data.stoklar[i].urun_urun_beden_adi +  '</div>' +
+                                '<div class="card-body"><div class="chart-container-2" style="text-align: center;">' +
+                                '<a href="" data-toggle="modal" data-target="#RResmiBuyut' + data.stoklar[i].id +'" target="_blank">' +
+                                '<span class="img-container" style="text-align: center">' +
+                                '<img id="mmyImg' + data.stoklar[i].id +'" src="/media/' + data.stoklar[i].urun_gorseli +'" style="height: 100%; width: 50%;">' +
+                                '</span></a></div></div><div id="RResmiBuyut' + data.stoklar[i].id +'" class="modal fade" role="dialog"><div class="modal-dialog">' +
+                                '<div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal">&times;</button>' +
+                                '</div><div class="modal-body">' +
+                                '<img id="mmyImg' + data.stoklar[i].id +'" src="/media/' + data.stoklar[i].urun_gorseli +'" style="height: 100%; width: 100%;">' +
+                                '</div></div></div></div><div class="table-responsive">' +
+                                '<div><table class="table align-items-center"><tbody>' +
+                                '<tr><td><i class="fa fa-circle text-light-3 mr-2"></i>Ürün Barkod</td><td>' + data.stoklar[i].urun_barkod_no +'</td>' +
+                                '</tr><tr><td><i class="fa fa-circle text-white mr-2"></i>Ürün No</td><td>'+data.stoklar[i].urun_no+'</td>' +
+                                '</tr><tr><td><i class="fa fa-circle text-white mr-2"></i>Ürün Adı</td><td>'+data.stoklar[i].urun_adi+'</td>' +
+                                '</tr><tr><td><i class="fa fa-circle text-light-1 mr-2"></i> Ürün Renk </td><td>'+data.stoklar[i].urun_urun_rengi+'</td>' +
+                                '</tr><tr><td><i class="fa fa-circle text-light-2 mr-2"></i>Ürün Beden/Numara</td><td>'+data.stoklar[i].urun_urun_beden+'</td>' +
+                                '</tr><tr><td><i class="fa fa-circle text-light-3 mr-2"></i>Ürün Stok</td><td> '+data.stoklar[i].urun_stok+'</td>' +
+                                '</tr><tr><td><i class="fa fa-circle text-light-3 mr-2"></i>Ürün Fiyatı</td><td>'+data.stoklar[i].urun_fiyat+'   ₺</td>' +
+                                '</tr>' +
+                                '</tbody>' +
+                                '</table>' +
+                                '</div></div></div></div> </div>'
+                        }
+                        $("#appendedlist").html(html)
+                }
+            });
+          });
+        });
+    </script>
+    <style>
+         .pagination {
+      text-align: center;
+    }
+    .pagination ul {
+        display: inline-block;
+        margin: 0;
+        padding: 0;
+        /* For IE, the outcast */
+        {#zoom:1;#}
+        *display: inline;
+    }
+    .pagination li {
+        float: left;
+        padding: 2px 5px;
+        border: 1px solid black;
+    }
+
+		.pagination ul li a, .pagination ul li span {
+			display: block;
+			padding: 0 15px;
+			color: #fff;
+			font-size: 17px;
+			line-height: 38px;
+			text-decoration: none;
+		}
+
+		.pagination ul li:last-child {
+			margin-left: 8px;
+		}
+
+		.pagination ul li:first-child {
+			margin-right: 8px;
+		}
+
+		.pagination ul li.active {
+			color: #fff;
+			background-color: #2196f3;
+		}
+
+		.pagination ul li:hover, .pagination ul li.active {
+			color: #fff;
+			background-color: #2196f3;
+		}
+
+		.pagination ul li {
+			float: left;
+			margin: 0 1px 0 0;
+			list-style: none;
+		}
+
+		.pagination ul li a, .pagination ul li span {
+			display: block;
+			padding: 0 15px;
+			color: #fff;
+			font-size: 17px;
+			line-height: 38px;
+			text-decoration: none;
+		}
+
+		.pagination ul li:last-child {
+			margin-left: 8px;
+		}
+
+		.pagination ul li:first-child {
+			margin-right: 8px;
+		}
+
+		.pagination ul li.active {
+			color: #fff;
+			background-color: #2196f3;
+		}
+
+		.pagination ul li:hover, .pagination ul li.active {
+			color: #fff;
+			background-color: #2196f3;
+		}
+	</style>
+</head>
+
+<body class="bg-theme bg-theme1">
+
+<!-- Start wrapper-->
+ <div id="wrapper">
+
+  <!--Start sidebar-wrapper-->
+   <div id="sidebar-wrapper" data-simplebar="" data-simplebar-auto-hide="true">
+     <div class="brand-logo">
+      <a href="#">
+{#       <img src="assets/images/logo-icon.png" class="logo-icon" alt="logo icon">#}
+       <h5 class="logo-text">Dashtreme Admin</h5>
+     </a>
+   </div>
+   <ul class="sidebar-menu do-nicescrol">
+      <li class="sidebar-header">MENU</li>
+      <li>
+        <a href="/stoklar">
+          <i class="zmdi zmdi-view-dashboard"></i> <span>Anasayfa</span>
+        </a>
+      </li>
+      <li>
+        <a href="/stok_table">
+          <i class="zmdi zmdi-invert-colors"></i> <span>Stoklar</span>
+        </a>
+      </li>
+
+      <li>
+        <a href="/stoguazalan">
+          <i class="zmdi zmdi-format-list-bulleted"></i> <span>Stoğu azalan ürünler</span>
+        </a>
+      </li>
+
+      <li>
+          {% csrf_token %}
+        <a href="/xml_parse">
+          <i class="zmdi zmdi-grid"></i> <span>XML indir</span>
+        </a>
+      </li>
+
+{#      <li>#}
+{#        <a href="calendar.html">#}
+{#          <i class="zmdi zmdi-calendar-check"></i> <span>Calendar</span>#}
+{#          <small class="badge float-right badge-light">New</small>#}
+{#        </a>#}
+{#      </li>#}
+{##}
+{#      <li>#}
+{#        <a href="profile.html">#}
+{#          <i class="zmdi zmdi-face"></i> <span>Profile</span>#}
+{#        </a>#}
+{#      </li>#}
+
+      <li>
+        <a href="/logout">
+          <i class="zmdi zmdi-lock"></i> <span>Logout</span>
+        </a>
+      </li>
+
+{#       <li>#}
+{#        <a href="register.html" target="_blank">#}
+{#          <i class="zmdi zmdi-account-circle"></i> <span>Registration</span>#}
+{#        </a>#}
+{#      </li>#}
+
+{#      <li class="sidebar-header">LABELS</li>#}
+{#      <li><a href="javaScript:void();"><i class="zmdi zmdi-coffee text-danger"></i> <span>Important</span></a></li>#}
+{#      <li><a href="javaScript:void();"><i class="zmdi zmdi-chart-donut text-success"></i> <span>Warning</span></a></li>#}
+{#      <li><a href="javaScript:void();"><i class="zmdi zmdi-share text-info"></i> <span>Information</span></a></li>#}
+
+    </ul>
+
+   </div>
+   <!--End sidebar-wrapper-->
+
+<!--Start topbar header-->
+<header class="topbar-nav">
+ <nav class="navbar navbar-expand fixed-top">
+  <ul class="navbar-nav mr-auto align-items-center">
+    <li class="nav-item">
+      <a class="nav-link toggle-menu" href="javascript:void();">
+       <i class="icon-menu menu-icon"></i>
+     </a>
+    </li>
+    <li class="nav-item">
+      <form class="search-bar">
+        <input id="searchInput" type="text" class="form-control" placeholder="Enter keywords">
+         <a href="javascript:void();"><i class="icon-magnifier"></i></a>
+      </form>
+    </li>
+  </ul>
+
+  <ul class="navbar-nav align-items-center right-nav-link">
+    <li class="nav-item dropdown-lg">
+      <a class="nav-link dropdown-toggle dropdown-toggle-nocaret waves-effect" data-toggle="dropdown" href="javascript:void();">
+      <i class="fa fa-envelope-open-o"></i></a>
+    </li>
+    <li class="nav-item dropdown-lg">
+      <a class="nav-link dropdown-toggle dropdown-toggle-nocaret waves-effect" data-toggle="dropdown" href="javascript:void();">
+      <i class="fa fa-bell-o"></i></a>
+    </li>
+    <li class="nav-item language">
+      <a class="nav-link dropdown-toggle dropdown-toggle-nocaret waves-effect" data-toggle="dropdown" href="javascript:void();"><i class="fa fa-flag"></i></a>
+      <ul class="dropdown-menu dropdown-menu-right">
+          <li class="dropdown-item"> <i class="flag-icon flag-icon-gb mr-2"></i> English</li>
+          <li class="dropdown-item"> <i class="flag-icon flag-icon-fr mr-2"></i> French</li>
+          <li class="dropdown-item"> <i class="flag-icon flag-icon-cn mr-2"></i> Chinese</li>
+          <li class="dropdown-item"> <i class="flag-icon flag-icon-de mr-2"></i> German</li>
+        </ul>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link dropdown-toggle dropdown-toggle-nocaret" data-toggle="dropdown" href="#">
+        <span class="user-profile"><img src="https://via.placeholder.com/110x110" class="img-circle" alt="user avatar"></span>
+      </a>
+      <ul class="dropdown-menu dropdown-menu-right">
+       <li class="dropdown-item user-details">
+        <a href="javaScript:void();">
+           <div class="media">
+             <div class="avatar"><img class="align-self-start mr-3" src="https://via.placeholder.com/110x110" alt="user avatar"></div>
+            <div class="media-body">
+            <h6 class="mt-2 user-title">Sarajhon Mccoy</h6>
+            <p class="user-subtitle">mccoy@example.com</p>
+            </div>
+           </div>
+          </a>
+        </li>
+        <li class="dropdown-divider"></li>
+        <li class="dropdown-item"><i class="icon-envelope mr-2"></i> Inbox</li>
+        <li class="dropdown-divider"></li>
+        <li class="dropdown-item"><i class="icon-wallet mr-2"></i> Account</li>
+        <li class="dropdown-divider"></li>
+        <li class="dropdown-item"><i class="icon-settings mr-2"></i> Setting</li>
+        <li class="dropdown-divider"></li>
+        <li class="dropdown-item"><i class="icon-power mr-2"></i> Logout</li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+</header>
+<!--End topbar header-->
+
+<div class="clearfix"></div>
+
+  <div class="content-wrapper" style="margin-left: 13% !important;" >
+    <div class="container-fluid">
+
+  <!--Start Dashboard Content-->
+
+	<div class="card mt-3">
+    <div class="card-content">
+        <div class="row row-group m-0">
+            <div class="col-12 col-lg-6 col-xl-3 border-light">
+                <div class="card-body">
+                  <h5 class="text-white mb-0">{{ toplam.id__count }} <span class="float-right"><i class="fa fa-shopping-cart"></i></span></h5>
+                    <div class="progress my-3" style="height:3px;">
+                       <div class="progress-bar" style="width:55%"></div>
+                    </div>
+                  <p class="mb-0 text-white small-font">Toplam Kalem Sayısı<span class="float-right">{{ toplam.id__count }} <i class="zmdi zmdi-long-arrow-up"></i></span></p>
+                </div>
+            </div>
+            <div class="col-12 col-lg-6 col-xl-3 border-light">
+                <div class="card-body">
+                  <h5 class="text-white mb-0">{{ stoktakiurunler.urun_stok__sum }} <span class="float-right"><i class="fa fa-usd"></i></span></h5>
+                    <div class="progress my-3" style="height:3px;">
+                       <div class="progress-bar" style="width:55%"></div>
+                    </div>
+                  <p class="mb-0 text-white small-font">Stoktaki Toplam Ürün Sayısı<span class="float-right">{{ stoktakiurunler.urun_stok__sum }} <i class="zmdi zmdi-long-arrow-up"></i></span></p>
+                </div>
+            </div>
+            <div class="col-12 col-lg-6 col-xl-3 border-light">
+                <div class="card-body">
+                    <h5 class="text-white mb-0"><h6>Kategoriler</h6>
+                        {% for kategori in stok_kategori %}
+                            <a href="javascript:void();" class="badge badge-dark badge-pill" id="kategorigetir_{{ kategori.id }}">{{ kategori.urun_kategori }}</a>
+                          <script>
+                              $("#kategorigetir_{{ kategori.id }}").on('click', function() {
+                                  {#alert  ({{ kategori.id }});#}
+                                  var csrftoken = $("[name=csrfmiddlewaretoken]").val();
+{#                                  {% for kateg in stok_kategori %}#}
+{#                                      {% if kateg.id != kategori.id %}#}
+{#                                        #}
+{#                                      {% endif %}#}
+{#                                  {% endfor %}#}
+                                    $.ajax
+                                    ({
+                                        url: 'search',
+                                        data: {
+                                            'csrfmiddlewaretoken': csrftoken,
+                                            'key': 'kategori',
+                                            'search': {{ kategori.id }},
+                                        },
+                                        type: 'post',
+                                        success: function (data) {
+                                                var html = ''
+
+                                                if(data.stoklar == ''){
+                                                    $("#list").hide();
+                                                    $("#appendedlist").hide();
+                                                    $(".pagination").hide();
+                                                }
+                                                else{
+                                                    $("#appendedlist").show();
+                                                    $(".pagination").hide();
+                                                }
+                                                for (let i = 0; i < data.stoklar.length; i++) {
+                                                     if (data.stoklar[i].urun_stok < 2){
+                                                        str =  '<div class="card" style="background-color: indianred">'
+                                                    } else if (2 <= data.stoklar[i].urun_stok < 5) {
+                                                        str =  '<div class="card" style="background-color: burlywood">'
+                                                    } else  {
+                                                        str =  '<div class="card" style="background-color: aliceblue">'
+                                                    }
+                                                    html += ' <div  class="col-12 col-lg-3 col-xl-3">' + str +
+                                                        '<div class="card-header">' + data.stoklar[i].urun_adi +" " +
+                                                        "/ "+ data.stoklar[i].urun_urun_rengi +" / "+ data.stoklar[i].urun_urun_beden_adi +  '</div>' +
+                                                        '<div class="card-body"><div class="chart-container-2" style="text-align: center;">' +
+                                                        '<a href="" data-toggle="modal" data-target="#RResmiBuyut' + data.stoklar[i].id +'" target="_blank">' +
+                                                        '<span class="img-container" style="text-align: center">' +
+                                                        '<img id="mmyImg' + data.stoklar[i].id +'" src="/media/' + data.stoklar[i].urun_gorseli +'" style="height: 100%; width: 50%;">' +
+                                                        '</span></a></div></div><div id="RResmiBuyut' + data.stoklar[i].id +'" class="modal fade" role="dialog"><div class="modal-dialog">' +
+                                                        '<div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal">&times;</button>' +
+                                                        '</div><div class="modal-body">' +
+                                                        '<img id="mmyImg' + data.stoklar[i].id +'" src="/media/' + data.stoklar[i].urun_gorseli +'" style="height: 100%; width: 100%;">' +
+                                                        '</div></div></div></div><div class="table-responsive">' +
+                                                        '<div><table class="table align-items-center"><tbody>' +
+                                                        '<tr><td><i class="fa fa-circle text-light-3 mr-2"></i>Ürün Barkod</td><td>' + data.stoklar[i].urun_barkod_no +'</td>' +
+                                                        '</tr><tr><td><i class="fa fa-circle text-white mr-2"></i>Ürün No</td><td>'+data.stoklar[i].urun_no+'</td>' +
+                                                        '</tr><tr><td><i class="fa fa-circle text-white mr-2"></i>Ürün Adı</td><td>'+data.stoklar[i].urun_adi+'</td>' +
+                                                        '</tr><tr><td><i class="fa fa-circle text-light-1 mr-2"></i> Ürün Renk </td><td>'+data.stoklar[i].urun_urun_rengi+'</td>' +
+                                                        '</tr><tr><td><i class="fa fa-circle text-light-2 mr-2"></i>Ürün Beden/Numara</td><td>'+data.stoklar[i].urun_urun_beden+'</td>' +
+                                                        '</tr><tr><td><i class="fa fa-circle text-light-3 mr-2"></i>Ürün Stok</td><td> '+data.stoklar[i].urun_stok+'</td>' +
+                                                        '</tr><tr><td><i class="fa fa-circle text-light-3 mr-2"></i>Ürün Fiyatı</td><td>'+data.stoklar[i].urun_fiyat+'   ₺</td>' +
+                                                        '</tr><tr><td><i class="fa fa-circle text-light-3 mr-2"></i>Ürün Kategori</td><td>'+data.stoklar[i].urun_kategori+'</td>' +
+                                                        '</tr><tr><td><i class="fa fa-circle text-light-3 mr-2"></i>Ürün Alt Kategori</td><td>'+data.stoklar[i].urun_alt_kategori+'</td>' +
+                                                        '</tr>' +
+                                                        '</tbody>' +
+                                                        '</table>' +
+                                                        '</div></div></div></div> </div>'
+                                                }
+                                                $("#appendedlist").html(html)
+                                                $("#appendedlist").show();
+                                                $("#list").hide();
+
+                                        }
+                                    });
+                                });
+                          </script>
+                        {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+ </div>
+
+	<div class="row" id="appendedlist">
+    </div>
+	<div class="row" id="list">
+
+{% for stok in stoklar %}
+     <div  class="col-12 col-lg-3 col-xl-3">
+     {% if stok.urun_stok < 2 %}
+        <div class="card" style="background: indianred">
+    {% elif stok.urun_stok >= 2 and stok.urun_stok < 5 %}
+         <div class="card" style="background: burlywood" >
+     {% else %}
+          <div class="card" >
+    {% endif %}
+           <div class="card-header">{{ stok.urun_adi }} / {{ stok.urun_urun_rengi }} / {{ stok.urun_urun_beden_adi }}
+           </div>
+           <div class="card-body">
+		     <div class="chart-container-2" style="text-align: center;">
+                 <a href="" data-toggle="modal" data-target="#ResmiBuyut{{ stok.id }}" target="_blank">
+                     <span class="img-container" style="text-align: center"> <!-- Inline parent element -->
+                         <img id="myImg{{ stok.id }}" src="{{ stok.urun_gorseli.url }}" style="height: 100%; width: 50%;">
+                    </span>
+                 </a>
+			  </div>
+           </div>
+        <!-- Modal -->
+                <div id="ResmiBuyut{{ stok.id }}" class="modal fade" role="dialog">
+                  <div class="modal-dialog">
+                    <!-- Modal content-->
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                      </div>
+                      <div class="modal-body">
+                            <img id="myImg{{ stok.id }}" src="{{ stok.urun_gorseli.url }}" style="height: 100%; width: 100%;">
+                      </div>
+{#                      <div class="modal-footer">#}
+{#                        <button type="button" class="btn btn-default" data-dismiss="modal">Kapat</button>#}
+{#                      </div>#}
+                    </div>
+                  </div>
+                </div>
+        <!-- Modal -->
+            <div class="table-responsive">
+           	  <a class="btn btn-light btn-block" data-toggle="collapse" href="#collapseExample{{ stok.id }}" role="button" aria-expanded="false" aria-controls="collapseExample">
+			    Detay Görüntüle
+			  </a>
+			  <div class="collapse" id="collapseExample{{ stok.id }}">
+             <table class="table align-items-center">
+               <tbody>
+                 <tr>
+                   <td><i class="fa fa-circle text-white mr-2"></i>Ürün Barkod</td>
+                   <td>{{ stok.urun_barkod_no }}</td>
+                 </tr>
+                 <tr>
+                   <td><i class="fa fa-circle text-light-1 mr-2"></i>Ürün No</td>
+                   <td>{{ stok.urun_no }}</td>
+                 </tr>
+                 <tr>
+                   <td><i class="fa fa-circle text-light-2 mr-2"></i>Ürün Adı</td>
+                   <td>{{ stok.urun_adi }}</td>
+                 </tr>
+                 <tr>
+                   <td><i class="fa fa-circle text-light-3 mr-2"></i>Ürün Rengi</td>
+                   <td>{{ stok.urun_urun_rengi }}</td>
+                 </tr>
+                 <tr>
+                   <td><i class="fa fa-circle text-light-3 mr-2"></i>Ürün Beden/no</td>
+                   <td>{{ stok.urun_urun_beden }}</td>
+                 </tr>
+                 <tr>
+                   <td><i class="fa fa-circle text-light-3 mr-2"></i>Ürün Stok</td>
+                   <td>{{ stok.urun_stok }}</td>
+                 </tr>
+                 <tr>
+                   <td><i class="fa fa-circle text-light-3 mr-2"></i>Ürün Fiyatı</td>
+                   <td>{{ stok.urun_fiyat }}    ₺</td>
+                 </tr>
+                 <tr>
+                   <td><i class="fa fa-circle text-light-3 mr-2"></i>Kategori</td>
+                   <td>{{ stok.urun_urun_stok_kategori }}</td>
+                 <td>
+                     <tr>
+                       <td><i class="fa fa-circle text-light-3 mr-2"></i>Alt Kategori</td>
+                       <td>{{ stok.urun_urun_stok_alt_kategori }}</td>
+    {#                   <td>+5%</td>#}
+                     </tr>
+                 </td>
+                 </tr>
+               </tbody>
+             </table>
+             </div>
+           </div>
+         </div>
+
+     </div>
+{% endfor %}
+
+
+
+	</div>
+     <div class="pagination">
+		{% if stoklar.has_other_pages %}
+			<ul>
+                    <li><a href="/stoklar/?page={{ 1 }}">&laquo;</a></li>
+				{% if stoklar.has_previous %}
+					<li><a href="/stoklar/?page={{ stoklar.previous_page_number }}"><</a></li>
+				{% else %}
+
+				{% endif %}
+				{% for pg in page_range %}
+					{% if stoklar.number == pg %}
+						<li class="active"><span>{{ pg }} <span class="sr-only">(current)</span></span></li>
+					{% else %}
+						<li><a href="/stoklar/?page={{ pg }}">{{ pg }}</a></li>
+					{% endif %}
+				{% endfor %}
+				{% if stoklar.has_next %}
+					<li><a href="/stoklar/?page={{ stoklar.next_page_number }}">></a></li>
+				{% else %}
+{#					<li class="disabled"><span>&raquo;</span></li>#}
+				{% endif %}
+				<li><a href="/stoklar/?page={{ last_exit }}">&raquo;</a></li>
+			</ul>
+		{% endif %}
+	</div>
+    </div>
+    </div>
+    </footer>
+	<!--End footer-->
+
+  <!--start color switcher-->
+   <div class="right-sidebar">
+    <div class="switcher-icon">
+      <i class="zmdi zmdi-settings zmdi-hc-spin"></i>
+    </div>
+    <div class="right-sidebar-content">
+
+      <p class="mb-0">Gaussion Texture</p>
+      <hr>
+
+      <ul class="switcher">
+        <li id="theme1"></li>
+        <li id="theme2"></li>
+        <li id="theme3"></li>
+        <li id="theme4"></li>
+        <li id="theme5"></li>
+        <li id="theme6"></li>
+      </ul>
+
+      <p class="mb-0">Gradient Background</p>
+      <hr>
+
+      <ul class="switcher">
+        <li id="theme7"></li>
+        <li id="theme8"></li>
+        <li id="theme9"></li>
+        <li id="theme10"></li>
+        <li id="theme11"></li>
+        <li id="theme12"></li>
+		<li id="theme13"></li>
+        <li id="theme14"></li>
+        <li id="theme15"></li>
+      </ul>
+
+     </div>
+   </div>
+  <!--end color switcher-->
+  </div><!--End wrapper-->
+
+    <script src="{% static "assets/js/jquery.min.js" %}"></script>
+    <script src="{% static "assets/js/popper.min.js" %}"></script>
+    <script src="{% static "assets/js/bootstrap.min.js" %}"></script>
+    <script src="{% static "assets/plugins/simplebar/js/simplebar.js" %}"></script>
+    <script src="{% static "assets/js/sidebar-menu.js" %}"></script>
+{#    <script src="{% static "assets/js/jquery.loading-indicator.js" %}"></script>#}
+    <script src="{% static "assets/js/app-script.js" %}"></script>
+    <script src="{% static "assets/plugins/Chart.js/Chart.min.js" %}"></script>
+
+</body>
+</html>
